@@ -1,10 +1,14 @@
 package fileio;
 
+import gameplay_elements.Player;
+
 import java.util.ArrayList;
 
 public final class GameInput {
         private StartGameInput startGame;
         private ArrayList<ActionsInput> actions;
+
+        private int currentPlayer;
 
         public GameInput() {
         }
@@ -23,6 +27,23 @@ public final class GameInput {
 
         public void setActions(final ArrayList<ActionsInput> actions) {
                 this.actions = actions;
+        }
+
+        public Player getCurrentPlayer() {
+                if (currentPlayer == 1) {
+                        return this.getStartGame().player1;
+                }
+                return this.getStartGame().player2;
+        }
+
+        public Player getPlayer(int index) {
+                if (index == 1)
+                        return getStartGame().player1;
+                return getStartGame().player2;
+        }
+
+        public void setCurrentPlayer(int currentPlayer) {
+                this.currentPlayer = currentPlayer;
         }
 
         @Override

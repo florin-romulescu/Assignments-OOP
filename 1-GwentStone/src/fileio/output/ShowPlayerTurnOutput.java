@@ -3,10 +3,10 @@ package fileio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ShowPlayerTurn extends Output{
+public class ShowPlayerTurnOutput extends Output{
     private int playerIndex;
     private int output;
-    public ShowPlayerTurn(String command, int playerIndex) {
+    public ShowPlayerTurnOutput(String command, int playerIndex) {
         super(command);
         this.playerIndex = playerIndex;
     }
