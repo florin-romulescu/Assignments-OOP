@@ -4,25 +4,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 
-public class ShowPlayerHeroOutput extends Output{
+public class ShowPlayerHeroOutput implements Output{
+    private String command;
     private int playerIndex;
     private CardInput output;
-    public ShowPlayerHeroOutput(String command, int playerIndex) {
-        super(command);
+
+    public ShowPlayerHeroOutput(String command, int playerIndex, CardInput output) {
+        this.command = command;
         this.playerIndex = playerIndex;
+        this.output = output;
+    }
+
+    @Override
+    public String getError() {
+        return "";
     }
 
     public ObjectNode convertToObjectNode() {
         ObjectNode obj = new ObjectMapper().createObjectNode();
 
-        obj.put("command", super.getCommand());
+        obj.put("command", command);
         obj.put("playerIdx", playerIndex);
         obj.put("output", output.convertToObjectNode());
 
         return obj;
-    }
-
-    public void setOutput(CardInput output) {
-        this.output = output;
     }
 }

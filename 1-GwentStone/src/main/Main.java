@@ -6,27 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import checker.CheckerConstants;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import fileio.ActionsInput;
 import fileio.GameInput;
 import fileio.Input;
-import fileio.output.Output;
-import fileio.output.ShowPlayerDeckOutput;
-import fileio.output.ShowPlayerHeroOutput;
-import fileio.output.ShowPlayerTurnOutput;
-import gameplay_elements.CommandRun;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Random;
 
 /**
- * The entry point to this homework. It runs the checker that tests your implentation.
+ * The entry point to this homework. It runs the checker that tests your implementation.
  */
 public final class Main {
     /**
@@ -79,7 +69,6 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
-        //TODO add here the entry point to your implementation
         mainLoop(inputData, output);
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
@@ -87,16 +76,16 @@ public final class Main {
     }
 
     /**
-     * main function for the assignment content
-     * @param input for test input
+     * Main entry of the implementation. It iterates through all games
+     * and call game.getStartGame().start() method.
+     * @param input the input data for all games
+     * @param output the output data
      */
     private static void mainLoop(Input input, ArrayNode output) {
         int numberOfGames = input.getGames().size();
 
         /* This for loops through all games. */
-        //TODO foreach
-        for (int gameIndex = 0; gameIndex < numberOfGames; ++gameIndex) {
-            GameInput game = input.getGames().get(gameIndex);
+        for (GameInput game : input.getGames()) {
             game.getStartGame().start(input, output, game);
         }
     }

@@ -1,21 +1,17 @@
 package fileio.output;
 
-public class Output {
-    private String command;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-    public Output(String command) {
-        this.command = command;
-    }
+public interface Output {
+    /**
+     * Convert the data of the class into an ObjectNode.
+     * @return an ObjectNode for the output
+     */
+    public ObjectNode convertToObjectNode();
 
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public int getPlayerIndex() {
-        return 0;
-    }
+    /**
+     * Get the error value of the class.
+     * @return an error String
+     */
+    public String getError();
 }

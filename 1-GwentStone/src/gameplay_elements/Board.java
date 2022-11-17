@@ -8,21 +8,6 @@ import fileio.Coordinates;
 
 import java.util.ArrayList;
 
-class Row {
-    ArrayList<CardInput> cells = new ArrayList<>();
-
-    public ArrayList<CardInput> getCells() {
-        return cells;
-    }
-
-    public ArrayNode convertToArrayNode() {
-        ArrayNode arr = new ObjectMapper().createArrayNode();
-        for (int i = 0; i < cells.size(); ++i) {
-            arr.add(cells.get(i).convertToObjectNode());
-        }
-        return arr;
-    }
-}
 public class Board{
     ArrayList<Row> rows = new ArrayList<>();
 
@@ -89,6 +74,12 @@ public class Board{
         return "";
     }
 
+    public CardInput removeCard(Coordinates coords) {
+        return rows.get(coords.getX())
+                .getCells()
+                .remove(coords.getY());
+    }
+
     public CardInput getCard(Coordinates coords) {
         if (coords.getX() < 0 || coords.getX() >= this.getRows().size()) {
             return null;
@@ -104,6 +95,11 @@ public class Board{
                 .get(coords.getY());
     }
 
+    /**
+     * Verify if the enemy player has a tank card.
+     * @param currentPlayerIndex the current player's index
+     * @return true if a tank is on the enemy player's rows else false
+     */
     public boolean enemyHasTank(int currentPlayerIndex) {
         if (currentPlayerIndex == 1) {
             for (int i = 0; i <= 1; ++i) {
@@ -127,6 +123,26 @@ public class Board{
         return false;
     }
 
+    /**
+     * Verify if there are frozen cards.
+     * @return true if there are frozen cards else false.
+     */
+    public boolean isFrozenCardOnTable() {
+        for (Row row: rows) {
+            for (CardInput card: row.getCells()) {
+                if (card.isFrozen()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Verify if the card with the given coordinates is frozen.
+     * @param coords the card coordinates
+     * @return true if the given card is frozen else false
+     */
     public boolean isFrozen(Coordinates coords) {
         CardInput card = getCard(coords);
         if (card == null) {
@@ -135,6 +151,11 @@ public class Board{
         return card.isFrozen();
     }
 
+    /**
+     * Get cards owner based on the row.
+     * @param coords the card coordinates
+     * @return the owner's index
+     */
     public int getCardPlayerIndex(Coordinates coords) {
         if (coords.getX() == 0 || coords.getX() == 1) {
             return 2;
@@ -142,9 +163,73 @@ public class Board{
         if (coords.getX() == 2 || coords.getX() == 3) {
             return 1;
         }
-        return 0;
+        return 0; // TODO
     }
 
+    /**
+     * Get the row's owner.
+     * @param row the row to verify
+     * @return the owner's index
+     */
+    public int getRowPlayerIndex(int row) {
+        if (row == 0 || row == 1) {
+            return 2;
+        }
+        if (row == 2 || row == 3) {
+            return 1;
+        }
+        return 0; // TODO
+    }
+
+    /**
+     * Delete the cards with health <= 0 from the board.
+     */
+    public void removeEliminatedCards() {
+        for (Row row: rows) {
+            for (int i = 0; i < row.getCells().size(); ++i) {
+                if (row.getCells().get(i).getHealth() <= 0) {
+                    row.getCells().remove(i);
+                    i -= 1;
+                }
+            }
+        }
+    }
+
+    /**
+     * Set hasAttacked = false for all cards.
+     */
+    public void initialiseNewRound() {
+        for (Row row : rows) {
+            for (CardInput card: row.getCells()) {
+                card.setHasAttacked(false);
+            }
+        }
+    }
+
+    /**
+     * Set frozen=false for all cards of the given player.
+     * @param playerIndex the corresponding player
+     */
+    public void unfrozePlayerCards(int playerIndex) {
+        if (playerIndex == 1) {
+            for (int i = 2; i <= 3; ++i) {
+                for (CardInput card: rows.get(i).getCells()) {
+                    card.setFrozen(false);
+                }
+            }
+        } else if (playerIndex == 2) {
+            for (int i = 0; i <= 1; ++i) {
+                for (CardInput card: rows.get(i).getCells()) {
+                    card.setFrozen(false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Convert the board to an ObjectNode for the output.
+     * @return an ArrayNode with all the cards
+     */
     public ArrayNode convertToArrayNode() {
         ArrayNode arr = new ObjectMapper().createArrayNode();
         for (int i = 0; i < rows.size(); ++i) {
@@ -153,4 +238,18 @@ public class Board{
         return arr;
     }
 
+    /**
+     * Convert the board to an ObjectNode for the output.
+     * @return an ArrayNode with all the cards if they are frozen
+     */
+    public ArrayNode convertToArrayNodeIfFrozen() {
+        if (!isFrozenCardOnTable()) {
+            return new ObjectMapper().createArrayNode();
+        }
+        ArrayNode arr = new ObjectMapper().createArrayNode();
+        for (int i = 0; i < rows.size(); ++i) {
+            arr.add(rows.get(i).convertToArrayNodeIfFrozen());
+        }
+        return arr;
+    }
 }

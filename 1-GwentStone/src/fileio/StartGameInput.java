@@ -3,6 +3,7 @@ package fileio;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fileio.output.GameEndedOutput;
 import gameplay_elements.*;
 
 import java.util.ArrayList;
@@ -16,11 +17,13 @@ public final class StartGameInput {
     private CardInput playerOneHero;
     private CardInput playerTwoHero;
     private int startingPlayer;
+    private ArrayList<CardInput> deck1;
+    private ArrayList<CardInput> deck2;
 
-    Player player1 = new Player(1);
-    Player player2 = new Player(2);
+    Player player1;
+    Player player2;
     private int numberOfRounds = 1;
-    private Board board = new Board();
+    private Board board;
 
     private int numberOfTurns = 0;
 
@@ -90,20 +93,22 @@ public final class StartGameInput {
     public void setBoard(Board board) {
         this.board = board;
     }
-    /** Return the current player.*/
-//    public Player getCurrentPlayer() {
-//        if (startingPlayer == 1) {
-//            if (numberOfTurns == 0)
-//                return player1;
-//            else
-//                return player2;
-//        } else {
-//            if (numberOfTurns == 0)
-//                return player2;
-//            else
-//                return player1;
-//        }
-//    }
+
+    public ArrayList<CardInput> getDeck1() {
+        return deck1;
+    }
+
+    public void setDeck1(ArrayList<CardInput> deck1) {
+        this.deck1 = deck1;
+    }
+
+    public ArrayList<CardInput> getDeck2() {
+        return deck2;
+    }
+
+    public void setDeck2(ArrayList<CardInput> deck2) {
+        this.deck2 = deck2;
+    }
 
     @Override
     public String toString() {
@@ -123,20 +128,29 @@ public final class StartGameInput {
                 + '}';
     }
 
+    /**
+     * Main loop for a game. It iterates through all commands
+     * and append to the output parameter the return of Command.run() method.
+     * @param input the data of all games
+     * @param output the output stream
+     * @param game the current game
+     */
     public void start(Input input, ArrayNode output, GameInput game) {
+        System.out.println(game.getActions().get(0));
         int numberOfCommands = game.getActions().size();
+        board = new Board();
+        player1 = new Player(1);
+        player2 = new Player(2);
+        deck1 = new ArrayList<>(input.getPlayerOneDecks().getDecks().get(playerOneDeckIdx));
+        deck2 = new ArrayList<>(input.getPlayerTwoDecks().getDecks().get(playerTwoDeckIdx));
         /* Shuffle decks*/
         Collections.shuffle(
-                input.getPlayerOneDecks().getDecks().get(
-                        game.getStartGame().getPlayerOneDeckIdx()
-                ),
+                deck1,
                 new Random(game.getStartGame().getShuffleSeed())
         );
 
         Collections.shuffle(
-                input.getPlayerTwoDecks().getDecks().get(
-                        game.getStartGame().getPlayerTwoDeckIdx()
-                ),
+                deck2,
                 new Random(game.getStartGame().getShuffleSeed())
         );
         /* Initializing Heroes */
@@ -144,19 +158,30 @@ public final class StartGameInput {
         setPlayerTwoHero(new HeroCard(getPlayerTwoHero()));
         /* Adding starting cards */
         player1.addCardInHand(
-                input.getPlayerOneDecks().getDecks().get(
-                        game.getStartGame().getPlayerOneDeckIdx()
-                )
+                deck1
         );
 
-        player2.addCardInHand(input.getPlayerTwoDecks().getDecks().get(
-                game.getStartGame().getPlayerTwoDeckIdx()
-        ));
+        player2.addCardInHand(
+                deck2
+        );
+        HeroCard hero1 = (HeroCard) getPlayerOneHero();
+        HeroCard hero2 = (HeroCard) getPlayerTwoHero();
         /* Setting the current player */
         game.setCurrentPlayer(startingPlayer);
         ObjectNode out;
         /* Iterating through all commands */
         for (int commandIndex = 0; commandIndex < numberOfCommands; ++commandIndex) {
+            if (hero1.getHealth() <= 0 && !game.isGameEnded()) {
+                output.add(new GameEndedOutput(2).convertToObjectNode());
+                game.setGameEnded(true);
+                input.incTotalGames();
+                input.incPlayerTowWins();
+            } else if (hero2.getHealth() <= 0 && !game.isGameEnded()) {
+                output.add(new GameEndedOutput(1).convertToObjectNode());
+                game.setGameEnded(true);
+                input.incTotalGames();
+                input.incPlayerOneWins();
+            }
             ActionsInput action = game.getActions().get(commandIndex);
             out = CommandRun.run(input, game, action);
             if (out != null) {
@@ -168,17 +193,19 @@ public final class StartGameInput {
                 numberOfRounds += 1;
                 player1.incMana(numberOfRounds);
                 player2.incMana(numberOfRounds);
+                board.initialiseNewRound();
+                hero1.setHasAttacked(false);
+                hero2.setHasAttacked(false);
                 /* Adding new cards in hand */
                 player1.addCardInHand(
-                        input.getPlayerOneDecks().getDecks().get(
-                                game.getStartGame().getPlayerOneDeckIdx()
-                        )
+                        deck1
                 );
 
-                player2.addCardInHand(input.getPlayerTwoDecks().getDecks().get(
-                        game.getStartGame().getPlayerTwoDeckIdx()
-                ));
+                player2.addCardInHand(
+                        deck2
+                );
             }
+            board.removeEliminatedCards();
         }
     }
 }

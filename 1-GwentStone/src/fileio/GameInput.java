@@ -10,6 +10,10 @@ public final class GameInput {
 
         private int currentPlayer;
 
+        private boolean gameEnded = false;
+
+        private int totalGames = 0;
+
         public GameInput() {
         }
 
@@ -19,6 +23,22 @@ public final class GameInput {
 
         public void setStartGame(final StartGameInput startGame) {
                 this.startGame = startGame;
+        }
+
+        public int getTotalGames() {
+                return totalGames;
+        }
+
+        public void setTotalGames(int totalGames) {
+                this.totalGames = totalGames;
+        }
+
+        public boolean isGameEnded() {
+                return gameEnded;
+        }
+
+        public void setGameEnded(boolean gameEnded) {
+                this.gameEnded = gameEnded;
         }
 
         public ArrayList<ActionsInput> getActions() {

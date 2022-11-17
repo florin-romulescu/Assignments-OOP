@@ -7,22 +7,26 @@ import fileio.CardInput;
 
 import java.util.ArrayList;
 
-public class ShowPlayerCardsOutput extends Output{
+public class ShowPlayerCardsOutput implements Output{
+    String command;
     private int playerIndex;
     private ArrayList<CardInput> output;
-    public ShowPlayerCardsOutput(String command, int playerIndex) {
-        super(command);
+
+    public ShowPlayerCardsOutput(String command, int playerIndex, ArrayList<CardInput> output) {
+        this.command = command;
         this.playerIndex = playerIndex;
+        this.output = output;
     }
 
-    public void setOutput(ArrayList<CardInput> output) {
-        this.output = output;
+    @Override
+    public String getError() {
+        return "";
     }
 
     public ObjectNode convertToObjectNode() {
         ObjectNode obj = new ObjectMapper().createObjectNode();
         ArrayNode arr = new ObjectMapper().createArrayNode();
-        obj.put("command", getCommand());
+        obj.put("command", command);
         obj.put("playerIdx", playerIndex);
 
         for (int i = 0; i < output.size(); ++i) {
