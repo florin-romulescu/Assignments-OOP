@@ -6,7 +6,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gameplay_elements.Board;
 import gameplay_elements.HeroCard;
 import gameplay_elements.Player;
-import gameplay_elements.cards.*;
+import gameplay_elements.cards.TheRipper;
+import gameplay_elements.cards.Disciple;
+import gameplay_elements.cards.HeartHound;
+import gameplay_elements.cards.Firestorm;
+import gameplay_elements.cards.Winterfell;
+import gameplay_elements.cards.Miraj;
+import gameplay_elements.cards.TheCursedOne;
 
 import java.util.ArrayList;
 
@@ -23,66 +29,130 @@ public class CardInput {
     public CardInput() {
     }
 
+    /**
+     * Get the mana cost.
+     * @return the cost to use the card
+     */
     public int getMana() {
         return mana;
     }
 
+    /**
+     * Set the mana cost.
+     * @param mana the new mana cost
+     */
     public void setMana(final int mana) {
         this.mana = mana;
     }
 
+    /**
+     * Get the attack damagae.
+     * @return the attack damage
+     */
     public int getAttackDamage() {
         return attackDamage;
     }
 
+    /**
+     * Set the attack damage.
+     * @param attackDamage the new attack damage
+     */
     public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
+    /**
+     * Get the card's health.
+     * @return the card's health
+     */
     public int getHealth() {
         return health;
     }
 
+    /**
+     * Set card's health.
+     * @param health the new card's health
+     */
     public void setHealth(final int health) {
         this.health = health;
     }
 
+    /**
+     * Getter for card description.
+     * @return the card description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Setter for card description.
+     * @param description the new card description
+     */
     public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Getter for card's colors.
+     * @return the cord's colors
+     */
     public ArrayList<String> getColors() {
         return colors;
     }
 
+    /**
+     * Setter for card's colors.
+     * @param colors the new card's colors
+     */
     public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
+    /**
+     * Getter for card's name.
+     * @return the card's name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Setter for card's name.
+     * @param name the card's name
+     */
     public void setName(final String name) {
         this.name = name;
     }
 
+    /**
+     * Getter for hasAttacked field.
+     * @return the hasAttacked field
+     */
     public boolean getHasAttacked() {
         return hasAttacked;
     }
 
+    /**
+     * Setter for hasAttacked field.
+     * @param hasAttacked the new hasAttacked field
+     */
     public void setHasAttacked(boolean hasAttacked) {
         this.hasAttacked = hasAttacked;
     }
 
+    /**
+     * Getter for isFrozen field.
+     * @return the isFrozen field value
+     */
     public boolean isFrozen() {
         return isFrozen;
     }
 
+    /**
+     * Setter for isFrozen field
+     * @param frozen the new isFrozen value
+     */
     public void setFrozen(boolean frozen) {
         isFrozen = frozen;
     }
